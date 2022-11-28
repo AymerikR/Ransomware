@@ -27,7 +27,7 @@ class CNC(CNCBase):
         #cration of the directory
         os.makedirs('/root/CNC', exist_ok=True)
         folder_name = "/root/CNC/" + str(token.hex())
-        #print(f"dir name : {'/root/CNC/' + str(token.hex())}")
+
         os.makedirs(folder_name, exist_ok=True)
 
         with open(folder_name + "/key.bin", "wb") as file:
@@ -35,12 +35,9 @@ class CNC(CNCBase):
         with open(folder_name+"/salt.bin",'wb') as file:
             file.write(salt)
 
-        #print(os.getcwd)
-        #print(os.listdir())
-        
         return {"status":"KO"}
 
-    def check_key_candidate(self,body:dict)->dict:
+    def check_key_candidate(self,path:str, params:dict, body:dict)->dict:
 
         token = base64.b64decode(body['token'])
         folder_name = "/root/CNC/" + token.hex()
@@ -55,9 +52,13 @@ class CNC(CNCBase):
 
             if key == key_candidate:
                 return {"valide":1}
+            else:
+                return {"valide":0}
+
         except:
             file.close()
             return {"valide":0}
+
         
 
            

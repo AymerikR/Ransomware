@@ -52,6 +52,8 @@ class CNCBase(BaseHTTPRequestHandler):
         fields = urlparse(url)
 
         params = dict()
+        if fields.query == "":
+            return fields.path, params
         for key_value in fields.query.split("&"):
             try:
                 key, value = key_value.split("=")
