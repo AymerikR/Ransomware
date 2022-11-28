@@ -21,7 +21,10 @@ Pour que l'algorithme soit robuste, il est nécessaire que la clef soit :
  
  # Q4 : Comment vérifier que la clef est la bonne ?
  
- 
+ Pour vérifier si la clef est la bonne, on peut réaliser une fonction check_key qui enverra la 
+ clef candidate vers le CNC. On réalisera ensuite une autre fonction au niveau du CNC qui 
+ comparera la clef candidate à la bonne clef (contenu dans le fichier key.bin).
+ Si la clef est correct, la fonction renverra True et permettra donc le déchiffrement des fichiers.
  
  
  
